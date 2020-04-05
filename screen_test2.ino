@@ -1,46 +1,67 @@
 #include "definitions.h"
 
+#define S1 A0
+#define S2 A1
+
+int randomCounter;
+long sensorCounterStart;
+
 void setup()
 {
   
   Serial.begin(115200);
 
   screenInit();
+
+  pinMode(S1, INPUT);
+  pinMode(S2, INPUT);
+  sensorCounterStart = millis();
+  randomCounter = 0;
+
+  randomSeed(analogRead(3));
+
   
   Serial.println("Starting Screen test program...");
 }
 
 void loop() 
 {
-    if(checkIfScreenInput(50, screenRxBuffer, &index))
-    {
-      Serial.println("Screen touched");
-      uint16_t bId = getScreenButtonId();
-      if(checkIfScreenSet(bId))
-      {
-        setState();
-      }
-      else if(checkIfScreenGo(bId))
-      {
-        setOpState();
-      }
-    }
+  if((millis() - sensorCounterStart) >= 10)
+  {
+    uint16_t s1DigitalRead = analogRead(S1);
+    uint16_t s2DigitalRead = analogRead(S2);
 
-    if(checkEncButtonPressed())
-    {
-      setState();
-    }
+    float s1Float = s1DigitalRead * (5.0/1024.0);
+    float s2Float = s2DigitalRead * (5.0/1024.0);
 
-    if(settingState == 1)
+    float fAvg = (s1Float + s2Float) / 2.0;
+
+    
+    setPGraphPoint(s1Float);
+    setFGraphPoint(s2Float);
+    setVGraphPoint(fAvg);
+
+    if(randomCounter >= 30)
     {
-      if(checkIfNewSelectionValue())
-      {
-        Serial.print("Selected Value: ");
-        Serial.println(selectionVal);
-      }
+      setPPeak(random(500,2000)/100.0);
+      setPMean(random(500,2000)/100.0);
+      setPEEP(random(500,2000)/100.0);
+      setRR(random(500,2000)/100.0);
+      setO2(random(500,2000)/100.0);
+      setMVE(random(500,2000)/100.0);
+      setVTI(random(500,2000)/100.0);
+      setVTE(random(500,2000)/100.0);
+
+      writeSRAMVar(9, SELECTION_E);
+
+      randomCounter = 0;
+    }
+    else
+    {
+      randomCounter++;
     }
     
-//    sensor1Val = analogRead(SENSOR1);
-//    Serial.print("Sensor Value is: ");
-//    Serial.println(sensor1Val);
+    sensorCounterStart = millis();
+  }
+  screenLoop();
 }
