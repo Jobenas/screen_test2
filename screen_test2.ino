@@ -36,6 +36,7 @@ void loop()
 
     float fAvg = (s1Float + s2Float) / 2.0;
 
+    float values[3] = {s1Float, s2Float, fAvg};
     
     setPGraphPoint(s1Float);
     setFGraphPoint(s2Float);

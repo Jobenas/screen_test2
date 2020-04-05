@@ -127,3 +127,20 @@ void setVGraphPoint(float datapoint)
   digital = (uint16_t)((VGRAPHRES/VMAXVAL) * datapoint);
   writeRTGSingle(digital, VGRAPH_ID);
 }
+
+void setAllGraphsPoints(float* values, uint16_t valSize)
+{
+  uint16_t datapoints[valSize];
+  float convs[valSize] = {PGRAPHRES/PMAXVAL, FGRAPHRES/FMAXVAL, VGRAPHRES/VMAXVAL};
+
+  for(int i=0; i<valSize; i++)
+  {
+    datapoints[i] = (uint16_t)(convs[i] * values[i]);
+  }
+
+  uint8_t channels = PGRAPH_ID | FGRAPH_ID | VGRAPH_ID;
+  Serial.print("Channel Flag: ");
+  Serial.println(channels, HEX);
+
+  writeRTGSMulti(datapoints, valSize, channels);
+}

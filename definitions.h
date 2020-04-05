@@ -20,8 +20,6 @@
 #define SCREEN_SETTING_ID 0x2000
 #define SCREEN_GO_ID 0x2050
 
-
-
 #define PGRAPH_ID 0x01
 #define FGRAPH_ID 0x02
 #define VGRAPH_ID 0x04
